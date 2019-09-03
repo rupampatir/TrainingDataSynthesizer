@@ -1,0 +1,9 @@
+classifiers/digits/pickled_mnist.pkl
+classifiers/digits/mnist_test.csv
+classifiers/digits/mnist_train.csv
+classifiers/income/__init__.pyc
+synthesizer.pyc
+classifiers/__init__.pyc
+classifiers/digits/__init__.pyc
+classifiers/digits/digits.pyc
+classifiers/income/income_classifier.pyc

@@ -1,6 +1,8 @@
 import random as random
 import numpy as np
 import csv
+import matplotlib.pyplot as plt
+
 
 class Synthesizer:
     def __init__(self,
@@ -22,29 +24,16 @@ class Synthesizer:
         self.randomizeFunction = randomizeFunction
         self.predictProb = predictProb
 
-    def randomize(self, k, x):
-
-        x_temp = self.randomizeFunction()
-
-        if len(x) == 0:
-            return x_temp
-
-        selected_features = random.sample(range(len(x_temp)), k)
-
-        for argfeature in selected_features:
-            x[argfeature] = x_temp[argfeature]
-
-        return x
-
     def synthesizeRecord(self, c, k_max, k_min, iter_max, conf_min, rej_max):
         y_current = 0
         x_current = []
         j = 0
         k = k_max
-        x = self.randomize(k, x_current)
+        x = self.randomizeFunction(k, x_current, c)
 
         for iteration in range(iter_max):
             y = self.predictProb(x)
+
             if y[c] >= y_current:
                 if y[c] > conf_min and c == np.argmax(y):
                     if (random.random() < y[c]):
@@ -57,9 +46,9 @@ class Synthesizer:
                 if j > rej_max:
                     k = np.max([k_min, k/2])
                     j = 0
-            x = self.randomize(k, x_current)
+            x = self.randomizeFunction(k, x_current, c)
 
-        return False  # Failed
+        return []  # Failed
 
     def synthesize(self, total_number_of_records):
 
@@ -68,11 +57,12 @@ class Synthesizer:
             current_number_of_records = 0
             with open('training_class_'+str(c)+'.csv', 'a') as csvFile:
                 writer = csv.writer(csvFile)
-                while current_number_of_records <= total_number_of_records:
+                while current_number_of_records < total_number_of_records:
                     record = self.synthesizeRecord(
                         c, self.kmax, self.kmin, self.iter_max, self.conf_min, self.rej_max)
-                    if record:
+                    if len(record) > 0:
                         current_number_of_records += 1
+                        print "Record " + str(current_number_of_records)
                         # synthesized_training_data.append(record) #c, kmax, kmin, iter_max, conf_min, rej_max
                         writer.writerow(record)
 
